@@ -19,8 +19,7 @@ public class DepartmentController {
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
-    
-    // 1. GET /departments/max-salary?departmentId=5 - ИСПРАВЛЕНО
+
     @GetMapping("/max-salary")
     public ResponseEntity<?> getMaxSalaryEmployee(@RequestParam int departmentId) {
         Optional<Employee> employee = departmentService.findMaxSalaryEmployee(departmentId);
@@ -33,7 +32,6 @@ public class DepartmentController {
         }
     }
     
-    // 2. GET /departments/min-salary?departmentId=5 - ИСПРАВЛЕНО
     @GetMapping("/min-salary")
     public ResponseEntity<?> getMinSalaryEmployee(@RequestParam int departmentId) {
         Optional<Employee> employee = departmentService.findMinSalaryEmployee(departmentId);
@@ -46,7 +44,6 @@ public class DepartmentController {
         }
     }
     
-    // 3. GET /departments/all?departmentId=5
     @GetMapping(value = "/all", params = "departmentId")
     public ResponseEntity<?> getEmployeesByDepartment(@RequestParam int departmentId) {
         List<Employee> employees = departmentService.findEmployeesByDepartment(departmentId);
@@ -59,20 +56,17 @@ public class DepartmentController {
         return ResponseEntity.ok(employees);
     }
     
-    // 4. GET /departments/all
     @GetMapping("/all")
     public Map<Integer, List<Employee>> getAllEmployeesGroupedByDepartment() {
         return departmentService.findAllEmployeesGroupedByDepartment();
     }
     
-    // 5. Дополнительный endpoint: сумма зарплат по отделу
     @GetMapping("/sum")
     public ResponseEntity<String> getDepartmentSalarySum(@RequestParam int departmentId) {
         double sum = departmentService.getDepartmentSalarySum(departmentId);
         return ResponseEntity.ok("Сумма зарплат в отделе " + departmentId + ": " + sum);
     }
     
-    // 6. Дополнительный endpoint: средняя зарплата по отделу
     @GetMapping("/average")
     public ResponseEntity<String> getDepartmentAverageSalary(@RequestParam int departmentId) {
         var averageOpt = departmentService.getDepartmentAverageSalary(departmentId);
@@ -89,7 +83,6 @@ public class DepartmentController {
                 .body("В отделе " + departmentId + " сотрудники не найдены");
     }
     
-    // 7. Получить всех сотрудников (для проверки)
     @GetMapping("/employees")
     public List<Employee> getAllEmployees() {
         return departmentService.getAllEmployees();
