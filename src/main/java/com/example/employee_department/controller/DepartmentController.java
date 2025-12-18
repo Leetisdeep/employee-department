@@ -2,89 +2,50 @@ package com.example.employee_department.controller;
 
 import com.example.employee_department.model.Employee;
 import com.example.employee_department.service.DepartmentService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/department")
 public class DepartmentController {
-    
     private final DepartmentService departmentService;
     
+    // Внедрение зависимости через конструктор
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
-
-    @GetMapping("/max-salary")
-    public ResponseEntity<?> getMaxSalaryEmployee(@RequestParam int departmentId) {
-        Optional<Employee> employee = departmentService.findMaxSalaryEmployee(departmentId);
-        
-        if (employee.isPresent()) {
-            return ResponseEntity.ok(employee.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("В отделе " + departmentId + " сотрудники не найдены");
-        }
+    
+    // 1. GET /department/{id}/employees
+    @GetMapping("/{id}/employees")
+    public List<Employee> getEmployeesByDepartment(@PathVariable("id") int departmentId) {
+        return departmentService.getEmployeesByDepartment(departmentId);
     }
     
-    @GetMapping("/min-salary")
-    public ResponseEntity<?> getMinSalaryEmployee(@RequestParam int departmentId) {
-        Optional<Employee> employee = departmentService.findMinSalaryEmployee(departmentId);
-        
-        if (employee.isPresent()) {
-            return ResponseEntity.ok(employee.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("В отделе " + departmentId + " сотрудники не найдены");
-        }
+    // 2. GET /department/{id}/salary/sum
+    @GetMapping("/{id}/salary/sum")
+    public double getTotalSalaryByDepartment(@PathVariable("id") int departmentId) {
+        return departmentService.getTotalSalaryByDepartment(departmentId);
     }
     
-    @GetMapping(value = "/all", params = "departmentId")
-    public ResponseEntity<?> getEmployeesByDepartment(@RequestParam int departmentId) {
-        List<Employee> employees = departmentService.findEmployeesByDepartment(departmentId);
-        
-        if (employees.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("В отделе " + departmentId + " сотрудники не найдены");
-        }
-        
-        return ResponseEntity.ok(employees);
+    // 3. GET /department/{id}/salary/max
+    @GetMapping("/{id}/salary/max")
+    public double getMaxSalaryByDepartment(@PathVariable("id") int departmentId) {
+        return departmentService.getMaxSalaryByDepartment(departmentId);
     }
     
-    @GetMapping("/all")
-    public Map<Integer, List<Employee>> getAllEmployeesGroupedByDepartment() {
-        return departmentService.findAllEmployeesGroupedByDepartment();
+    // 4. GET /department/{id}/salary/min
+    @GetMapping("/{id}/salary/min")
+    public double getMinSalaryByDepartment(@PathVariable("id") int departmentId) {
+        return departmentService.getMinSalaryByDepartment(departmentId);
     }
     
-    @GetMapping("/sum")
-    public ResponseEntity<String> getDepartmentSalarySum(@RequestParam int departmentId) {
-        double sum = departmentService.getDepartmentSalarySum(departmentId);
-        return ResponseEntity.ok("Сумма зарплат в отделе " + departmentId + ": " + sum);
-    }
-    
-    @GetMapping("/average")
-    public ResponseEntity<String> getDepartmentAverageSalary(@RequestParam int departmentId) {
-        var averageOpt = departmentService.getDepartmentAverageSalary(departmentId);
-        
-        if (averageOpt.isPresent()) {
-            return ResponseEntity.ok(String.format(
-                "Средняя зарплата в отделе %d: %.2f", 
-                departmentId, 
-                averageOpt.getAsDouble()
-            ));
-        }
-        
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("В отделе " + departmentId + " сотрудники не найдены");
-    }
-    
+    // 5. GET /department/employees
     @GetMapping("/employees")
-    public List<Employee> getAllEmployees() {
-        return departmentService.getAllEmployees();
+    public Map<Integer, List<Employee>> getAllEmployeesGroupedByDepartment() {
+        return departmentService.getAllEmployeesGroupedByDepartment();
     }
 }
